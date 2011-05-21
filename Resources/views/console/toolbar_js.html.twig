@@ -1,0 +1,62 @@
+<div id="sf2gencdt" style="display: none"></div>
+<script type="text/javascript">/*<![CDATA[*/
+    var sf2gen = {
+        htmlReturn: '<br/>',
+        sf2gencdt: null,
+        output: null,
+        init: function(){
+            this.sf2gencdt = document.getElementById('sf2gencdt');
+            var xhr = this.getXhr();
+            xhr.open('GET', '{{ path("_sf2gencdt") }}', false);
+            xhr.send('');
+            this.sf2gencdt.innerHTML = xhr.responseText;
+            this.sf2gencdt.style.display = 'block';
+            this.output = document.getElementById('sf2gencdt-console-output');           
+        },
+        append: function(txt){
+            this.output.innerHTML += txt;
+            this.output.scrollTop = this.output.scrollHeight;
+        },
+        getXhr: function(){
+            if (window.XMLHttpRequest) {
+                return new XMLHttpRequest();
+            } else {
+                return new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            return false;
+        },
+        colorize: function(txt){
+            return '<span style="color:#008000;">'+txt+'</span>';
+        },
+        request: function(txt){
+            var self = this;
+            var xhr = this.getXhr();
+            xhr.open('POST', '{{ path("_sf2gencdt_request") }}', true);
+            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200){
+                    if(txt == '.')
+                        txt = 'list';
+                    self.append('$ ' + self.colorize(txt) + ' :' + self.htmlReturn);
+                    self.append(xhr.responseText + self.htmlReturn);
+                }
+            };
+            xhr.send('command='+txt);
+        },
+        console: function(e) {
+            var keynum;
+            if(window.event){
+                keynum = e.keyCode;
+            }else if(e.which){
+                keynum = e.which;
+            }
+            if(keynum == 13 && e.target.value.length > 0){
+                this.request(e.target.value);
+                e.target.value = '';
+            }
+            return true;
+        }
+    };
+    sf2gen.init();
+/*]]>*/</script>

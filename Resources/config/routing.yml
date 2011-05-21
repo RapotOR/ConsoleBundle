@@ -1,0 +1,7 @@
+_sf2gencdt:
+    pattern:  /
+    defaults: { _controller: Sf2genConsoleBundle:Console:toolbar }
+    
+_sf2gencdt_request:
+    pattern:  /request/
+    defaults: { _controller: Sf2genConsoleBundle:Console:request }
