@@ -16,7 +16,7 @@ Installation
 
   1. Add this bundle to your vendor/ dir:
 
-        $ git submodule add git://github.com/rapotor/ConsoleBundle.git vendor/bundles/Sf2gen/Bundle/ConsoleBundle
+        $ git submodule add git://github.com/RapotOR/ConsoleBundle.git vendor/bundles/Sf2gen/Bundle/ConsoleBundle
 
   2. Add the Sf2gen namespace to your autoloader:
 
