@@ -11,7 +11,17 @@
             xhr.send('');
             this.sf2gencdt.innerHTML = xhr.responseText;
             this.sf2gencdt.style.display = 'block';
-            this.output = document.getElementById('sf2gencdt-console-output');           
+            this.output = document.getElementById('sf2gencdt-console-output');
+            this.resize();
+            if ( window.addEventListener ) {
+                window.addEventListener( 'resize', function(){ window.sf2gen.resize(); }, false );
+            } else if ( window.attachEvent ) {
+                window.attachEvent( "onresize", function(){ window.sf2gen.resize(); } );
+            }
+        },
+        resize: function(){
+            this.output.style.height = (window.innerHeight - 100) + 'px';
+            this.output.scrollTop = this.output.scrollHeight;
         },
         append: function(txt){
             this.output.innerHTML += txt;
