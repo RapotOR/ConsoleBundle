@@ -55,15 +55,11 @@
             xhr.send('command='+txt);
         },
         console: function(e) {
-            var keynum;
-            if(window.event){
-                keynum = e.keyCode;
-            }else if(e.which){
-                keynum = e.which;
-            }
-            if(keynum == 13 && e.target.value.length > 0){
-                this.request(e.target.value);
-                e.target.value = '';
+            var keynum = (e.keyCode ? e.keyCode : e.which);
+            var el = (e.target ? e.target : e.srcElement);
+            if(keynum == 13 && el.value.length > 0){
+                this.request(el.value);
+                el.value = '';
             }
             return true;
         }
