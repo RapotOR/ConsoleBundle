@@ -72,7 +72,41 @@ class Sf2genConsoleListener
         if (false !== $pos = $posrFunction($content, '</body>')) {
             $toolbar = "\n".str_replace("\n", '', $this->templating->render(
                 'Sf2genConsoleBundle:Console:toolbar_js.html.twig',
-                array('token' => $response->headers->get('X-Debug-Token'))
+                array(
+                    /* TODO: replace that by the real command list */
+                    'commands' => array(    'help',
+                                            'list', 
+                                            'assetic:dump', 
+                                            'assets:install', 
+                                            'cache:clear', 
+                                            'cache:warmup', 
+                                            'container:debug', 
+                                            'doctrine:ensure-production-settings', 
+                                            'doctrine:cache:clear-metadata',
+                                            'doctrine:cache:clear-query',
+                                            'doctrine:cache:clear-result',
+                                            'doctrine:database:create',
+                                            'doctrine:database:drop',
+                                            'doctrine:generate:entities',
+                                            'doctrine:generate:entity',
+                                            'doctrine:generate:proxies',
+                                            'doctrine:mapping:convert',
+                                            'doctrine:mapping:import',
+                                            'doctrine:mapping:info',
+                                            'doctrine:query:dql',
+                                            'doctrine:query:sql',
+                                            'doctrine:schema:create',
+                                            'doctrine:schema:drop',
+                                            'doctrine:schema:update',
+                                            'doctrine:update:entities',
+                                            'doctrine:update:entity',
+                                            'init:acl',
+                                            'init:bundle',
+                                            'router:debug',
+                                            'router:dump-cache',
+                                            'swiftmailer:spool:send',
+                                        ),
+                )
             ))."\n";
             $content = $substrFunction($content, 0, $pos).$toolbar.$substrFunction($content, $pos);
             $response->setContent($content);

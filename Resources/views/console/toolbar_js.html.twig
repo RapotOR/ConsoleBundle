@@ -4,6 +4,10 @@
         htmlReturn: '<br/>',
         sf2gencdt: null,
         output: null,
+        input: null,
+        ac: null,
+        commands: {{ commands|json_encode|raw }},
+        selectedCommand: -1,
         init: function(){
             this.sf2gencdt = document.getElementById('sf2gencdt');
             var xhr = this.getXhr();
@@ -12,12 +16,16 @@
             this.sf2gencdt.innerHTML = xhr.responseText;
             this.sf2gencdt.style.display = 'block';
             this.output = document.getElementById('sf2gencdt-console-output');
+            this.input = document.getElementById('sf2gencdt-console-input');
+            this.ac = document.getElementById('sf2gencdt-console-ac');
             this.resize();
+            /*
             if ( window.addEventListener ) {
                 window.addEventListener( 'resize', function(){ window.sf2gen.resize(); }, false );
             } else if ( window.attachEvent ) {
                 window.attachEvent( "onresize", function(){ window.sf2gen.resize(); } );
             }
+            */
         },
         resize: function(){
             this.output.style.height = (window.innerHeight - 100) + 'px';
@@ -56,13 +64,86 @@
         },
         console: function(e) {
             var keynum = (e.keyCode ? e.keyCode : e.which);
-            var el = (e.target ? e.target : e.srcElement);
-            if(keynum == 13 && el.value.length > 0){
-                this.request(el.value);
-                el.value = '';
+            if(keynum == 13 && this.input.value.length > 0){
+                if(this.selectedCommand > -1){
+                    this.input.value = this.ac.children[this.selectedCommand].innerHTML;
+                    this.selectedCommand = -1;
+                    this.ac.innerHTML = '';
+                }else{            
+                    this.request(this.input.value);
+                    this.input.value = '';
+                }
+            }else if(keynum == 37 || keynum == 39){
+                return;
+            }else if(keynum == 38){
+                if(this.ac.children.length > 0){
+                    this.selectedCommand--;
+                    if(this.selectedCommand < 0)
+                          this.selectedCommand = this.ac.children.length - 1;
+                    this.moveSelect(this.selectedCommand);
+                    this.input.value = this.input.value;
+                }else{
+                    this.selectedCommand = -1;
+                }
+            }else if(keynum == 40){
+                if(this.ac.children.length > 0){
+                    this.selectedCommand++;
+                    if(this.selectedCommand >= this.ac.children.length)
+                          this.selectedCommand = 0;
+                    this.moveSelect(this.selectedCommand);
+                }else{
+                    this.hideSelect();
+                }                
+            }else{
+                this.showSelect(keynum);
             }
-            return true;
-        }
+        },
+        moveSelect: function(idx){
+            for (var i = 0 ; i < this.ac.children.length ; i++){
+                if(i == idx){
+                    /*this.ac.children[i].style.color = '#f00';*/
+                    this.ac.children[i].style.backgroundColor = '#008000';
+                }else{
+                    /*this.ac.children[i].style.color = '#fff';*/
+                    this.ac.children[i].style.backgroundColor = '#fff';
+                }
+            }
+        },
+        showSelect: function(keynum){            
+            value = this.input.value;
+            if(value.length>1){
+                this.ac.style.display = 'block';
+                acContent = '';
+                j = 0;
+                for (i in this.commands){
+                    var regex = new RegExp('^' + value, 'i');
+                    if (regex.test( this.commands[i] )) {
+                        j++;
+                        acContent += this.buildSelectItem( this.commands[i]);
+                    }
+                }
+                this.ac.innerHTML = acContent;
+                if(j>0){
+                    this.selectedCommand = 0;
+                    this.moveSelect(0);
+                }else
+                    this.selectedCommand = -1;
+            }else{
+                this.hideSelect();
+            }
+        },
+        hideSelect: function(){
+            this.selectedCommand = -1;
+            this.ac.style.display = 'none';
+        },
+        chooseItem: function(item){
+            this.input.value = item.innerHTML;
+            this.ac.innerHTML = '';
+            this.selectedCommand = -1;
+        },
+        buildSelectItem: function(txt){
+            return '<div style="width:200px;height:20px;background-color:#fff;color:#000" onclick="sf2gen.chooseItem(this);">'+txt+'</div>';
+        }    
     };
     sf2gen.init();
 /*]]>*/</script>
