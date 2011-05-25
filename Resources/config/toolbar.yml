@@ -4,6 +4,6 @@ parameters:
 services:
     sf2gen.toolbar:
         class: %sf2gen.console.class%
-        arguments: [@templating.engine.twig]
+        arguments: [@kernel, @templating.engine.twig]
         tags:
             - { name: kernel.listener, event: onCoreResponse, priority: -128 }

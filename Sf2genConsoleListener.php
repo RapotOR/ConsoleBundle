@@ -2,19 +2,23 @@
 
 namespace Sf2gen\Bundle\ConsoleBundle;
 
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\Finder\Finder;
 
 class Sf2genConsoleListener
 {
     protected $templating;
+    protected $kernel;
     
-    public function __construct(TwigEngine $templating)
+    public function __construct(Kernel $kernel, TwigEngine $templating)
     {
         $this->templating = $templating;
+        $this->kernel = $kernel;
     }
 
     public function getVerbose()
@@ -73,43 +77,29 @@ class Sf2genConsoleListener
             $toolbar = "\n".str_replace("\n", '', $this->templating->render(
                 'Sf2genConsoleBundle:Console:toolbar_js.html.twig',
                 array(
-                    /* TODO: replace that by the real command list */
-                    'commands' => array(    'help',
-                                            'list', 
-                                            'assetic:dump', 
-                                            'assets:install', 
-                                            'cache:clear', 
-                                            'cache:warmup', 
-                                            'container:debug', 
-                                            'doctrine:ensure-production-settings', 
-                                            'doctrine:cache:clear-metadata',
-                                            'doctrine:cache:clear-query',
-                                            'doctrine:cache:clear-result',
-                                            'doctrine:database:create',
-                                            'doctrine:database:drop',
-                                            'doctrine:generate:entities',
-                                            'doctrine:generate:entity',
-                                            'doctrine:generate:proxies',
-                                            'doctrine:mapping:convert',
-                                            'doctrine:mapping:import',
-                                            'doctrine:mapping:info',
-                                            'doctrine:query:dql',
-                                            'doctrine:query:sql',
-                                            'doctrine:schema:create',
-                                            'doctrine:schema:drop',
-                                            'doctrine:schema:update',
-                                            'doctrine:update:entities',
-                                            'doctrine:update:entity',
-                                            'init:acl',
-                                            'init:bundle',
-                                            'router:debug',
-                                            'router:dump-cache',
-                                            'swiftmailer:spool:send',
-                                        ),
+                    'commands' => $this->getCommands(),
                 )
             ))."\n";
             $content = $substrFunction($content, 0, $pos).$toolbar.$substrFunction($content, $pos);
             $response->setContent($content);
         }
+    }
+    
+    protected function getCommands() {
+        $commands = array();
+        foreach ($this->kernel->getBundles() as $bundle) {
+            $finder = new Finder();
+            $finder->files()->name('*Command.php')->in($bundle->getPath());
+            
+            foreach ($finder as $file) {
+                $content = file_get_contents($bundle->getPath() . DIRECTORY_SEPARATOR . $file->getRelativePathName());
+                if (preg_match("/setName\((['\"])([a-z:]*)(['\"])\)/", $content, $matches)) {
+                    if(isset($matches[2])){
+                        $commands[] = $matches[2];
+                    }
+                }
+            }
+        }    
+        return $commands;
     }
 }
