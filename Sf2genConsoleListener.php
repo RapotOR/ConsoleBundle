@@ -14,11 +14,15 @@ class Sf2genConsoleListener
 {
     protected $templating;
     protected $kernel;
+    protected $cacheDir;
+    protected $cacheFile;
     
     public function __construct(Kernel $kernel, TwigEngine $templating)
     {
         $this->templating = $templating;
         $this->kernel = $kernel;
+        $this->cacheDir = $this->kernel->getCacheDir() . DIRECTORY_SEPARATOR . 'sf2genconsole' . DIRECTORY_SEPARATOR;
+        $this->cacheFile = 'commands.json';
     }
 
     public function getVerbose()
@@ -86,6 +90,24 @@ class Sf2genConsoleListener
     }
     
     protected function getCommands() {
+        
+        $commands = $this->getCacheContent();
+        
+        if($commands === false) {
+            if(!is_dir( $this->cacheDir ))
+                mkdir( $this->cacheDir, 777 );
+            
+            $commands = $this->fetchCommands();
+            
+            file_put_contents( $this->cacheDir . $this->cacheFile, json_encode($commands) );
+        }else{
+            $commands = json_decode($commands);
+        }
+        
+        return $commands;
+    }
+    
+    protected function fetchCommands() {
         $commands = array();
         foreach ($this->kernel->getBundles() as $bundle) {
             $finder = new Finder();
@@ -99,7 +121,14 @@ class Sf2genConsoleListener
                     }
                 }
             }
-        }    
+        }
         return $commands;
+    }
+    
+    protected function getCacheContent() {
+        if(is_file( $this->cacheDir . $this->cacheFile )){
+            return file_get_contents( $this->cacheDir . $this->cacheFile );
+        }
+        return false;
     }
 }
