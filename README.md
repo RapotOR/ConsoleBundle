@@ -11,6 +11,12 @@ Use it
 Instead of typing *php app/console list*, you will just have to type *list*.
 The dot is an alias for *list*.
 
+Have a look :
+
+<img src="https://github.com/RapotOR/ConsoleBundle/raw/master/Resources/doc/console_icon.png" width="800" alt="Screenshot" />
+<img src="https://github.com/RapotOR/ConsoleBundle/raw/master/Resources/doc/console_input.png" width="800" alt="Screenshot" />
+<img src="https://github.com/RapotOR/ConsoleBundle/raw/master/Resources/doc/console_input_autocompletion.png" width="800" alt="Screenshot" />
+
 Installation
 ============
 
