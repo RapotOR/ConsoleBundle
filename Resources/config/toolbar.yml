@@ -6,4 +6,4 @@ services:
         class: %sf2gen.console.class%
         arguments: [@kernel, @templating.engine.twig]
         tags:
-            - { name: kernel.listener, event: onCoreResponse, priority: -128 }
+            - { name: kernel.listener, event: core.response, method: onCoreResponse, priority: -128 }
