@@ -21,15 +21,19 @@ class Sf2genConsoleExtension extends Extension {
             $loader->load('toolbar.yml');
         }
         
-        if($config['local']) {
-            $config['apps'][] = basename($container->getParameter('kernel.root_dir'));
-        }
+        $local = basename($container->getParameter('kernel.root_dir'));
         
         if ($config['all']) {
             $config['apps'] = array_merge($config['apps'], $this->getApps($container));
         }
         
         $config['apps'] = array_unique($config['apps']);
+        
+        if($config['local'] && array_search($local, $config['apps']) === false) {
+            $config['apps'][] = $local;
+        }
+        
+        $container->setParameter('sf2gen_console.apps', $config['apps']);
     }
     
     public function getApps(ContainerBuilder $container)

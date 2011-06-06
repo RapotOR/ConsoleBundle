@@ -40,17 +40,35 @@
                    font:13px arial,sans-serif;
                    "
             >
-                Sf2gen\ConsoleBundle [Version 1.0 alpha1]<br/>
-                Current application directory: <span style="color:#008000;">{{ kernel_dir }}</span><br/>
+                Sf2gen\ConsoleBundle [Version 1.0 alpha2]<br/>
                 <hr/>
             </div>
             <div>
+{% if apps|length > 1 %}
+            <select
+                id="sf2gencdt-console-app" 
+                type="text" 
+                style="float:left;width:19%;background-color:#000;color:#fff;padding:2px;"
+                onkeyup="return sf2gen.console(event);"
+            />
+{% for item in apps %}
+            <option value="{{ item }}">{{ item }}</option>
+{% endfor %}            
+            </select>
             <input
                 id="sf2gencdt-console-input" 
                 type="text" 
-                style="width:100%;background-color:#000;color:#fff;padding:2px;width:600px;"
+                style="float:left;width:79%;background-color:#000;color:#fff;padding:2px;"
+                onkeyup="return sf2gen.console(event);"
+            />            
+{% else %}
+            <input
+                id="sf2gencdt-console-input" 
+                type="text" 
+                style="width:98%;background-color:#000;color:#fff;padding:2px;"
                 onkeyup="return sf2gen.console(event);"
             />
+{% endif %}
             <div id="sf2gencdt-console-ac" style="position:absolute;text-align:left;bottom:20px;left:0;display:none;"></div>
             </div>
         </div>

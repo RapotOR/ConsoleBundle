@@ -24,9 +24,14 @@ class ConsoleController extends Controller
             if(!empty($sf2Command))
                 $commandLine .= $sf2Command;
             
+            $app = ( $request->request->get('app') ? $request->request->get('app') : basename( $this->get('kernel')->getRootDir() ) );
+            if(!in_array($app, $this->container->getParameter('sf2gen_console.apps') )) {
+                return new Response('This application is not allowed...' , 200); // set to 200 to allow console display
+            }
+            
             $p = new Process(
                 $commandLine, 
-                $this->get('kernel')->getRootDir(), 
+                dirname( $this->get('kernel')->getRootDir() ) . DIRECTORY_SEPARATOR . $app, 
                 null, 
                 null, 
                 30, 
@@ -40,7 +45,7 @@ class ConsoleController extends Controller
             if($p->isSuccessful())
                 return new Response( str_replace("  ", "&nbsp;", nl2br($p->getOutput(), true)) );
             else
-                return new Response('The process wasnt successfull...' , 503);
+                return new Response('The process wasnt successfull...' , 200); // set to 200 to allow console display
                 
         }
         return new Response('This request was not found.', 404); // request is not a POST request
@@ -59,7 +64,7 @@ class ConsoleController extends Controller
 
         return $this->container->get('templating')->renderResponse('Sf2genConsoleBundle:Console:toolbar.html.twig', array(
             'position'     => $position,
-            'kernel_dir'   => $this->get('kernel')->getRootDir(),
+            'apps'         => $this->container->getParameter('sf2gen_console.apps'),
         ));
     }
     
