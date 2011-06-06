@@ -70,3 +70,14 @@ Installation
                 sf2gen:
                     pattern:    /_sf2gencdt/.*
                     security:  false
+
+  6. Here is the full configuration:
+
+        # app/config/config.yml
+        sf2gen_console:
+            toolbar: true  # display the toolbar in the current application ; to be disabled to use it in a third application.
+            local: true   # add the current application to list of available apps ; if false, the current application is excluded.
+            all: false   # will add all apps with a console available without using `apps` in configuration.
+            apps: #  use this to have a well defined list.
+                - app
+                - symfony-standard
