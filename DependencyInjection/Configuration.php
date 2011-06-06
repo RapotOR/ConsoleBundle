@@ -16,6 +16,13 @@ class Configuration implements ConfigurationInterface
             ->children()
                 //->booleanNode('toolbar')->defaultFalse()->end()
                 ->booleanNode('toolbar')->defaultTrue()->end()
+                ->booleanNode('all')->defaultFalse()->end()
+                ->booleanNode('local')->defaultTrue()->end()
+                ->arrayNode('apps')
+                    ->treatFalseLike(array())
+                    ->prototype('scalar')
+                    ->end()
+                ->end()
             ->end()
         ;
 
