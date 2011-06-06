@@ -5,6 +5,12 @@ The Sf2gen namespace will be used for a future project. Sf2genConsoleBundle will
 Sf2genConsoleBundle give you the possibility to be able to execute a console command direclty from your application.
 The interface is loaded with the same way than the WebProfilerBundle.
 
+Next DEV steps
+==========
+
+- Detach console routine in a separated service
+- Propose a twig view to have a console interface; not a toolbar.
+
 Use it
 ======
 
