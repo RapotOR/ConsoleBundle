@@ -1,4 +1,7 @@
 <div id="sf2gencdt" style="display: none"></div>
+<style type="text/css">
+    .sf2gencdt-item {width:200px;height:20px;background-color:#fff;color:#000;cursor:pointer;}
+</style>
 <script type="text/javascript">/*<![CDATA[*/
     var sf2gen = {
         htmlReturn: '<br/>',
@@ -19,13 +22,11 @@
             this.input = document.getElementById('sf2gencdt-console-input');
             this.ac = document.getElementById('sf2gencdt-console-ac');
             this.resize();
-            /*
             if ( window.addEventListener ) {
                 window.addEventListener( 'resize', function(){ window.sf2gen.resize(); }, false );
             } else if ( window.attachEvent ) {
                 window.attachEvent( "onresize", function(){ window.sf2gen.resize(); } );
             }
-            */
         },
         resize: function(){
             this.output.style.height = (window.innerHeight - 100) + 'px';
@@ -118,8 +119,8 @@
                 for (i in this.commands){
                     var regex = new RegExp('^' + value, 'i');
                     if (regex.test( this.commands[i] )) {
+                        acContent += this.buildSelectItem(j, this.commands[i]);
                         j++;
-                        acContent += this.buildSelectItem( this.commands[i]);
                     }
                 }
                 this.ac.innerHTML = acContent;
@@ -140,9 +141,10 @@
             this.input.value = item.innerHTML;
             this.ac.innerHTML = '';
             this.selectedCommand = -1;
+            this.input.focus();
         },
-        buildSelectItem: function(txt){
-            return '<div style="width:200px;height:20px;background-color:#fff;color:#000" onclick="sf2gen.chooseItem(this);">'+txt+'</div>';
+        buildSelectItem: function(idx, txt){
+            return '<div class="sf2gencdt-item" onmouseover="sf2gen.moveSelect('+idx+');" onclick="sf2gen.chooseItem(this);">'+txt+'</div>';
         }    
     };
     sf2gen.init();
