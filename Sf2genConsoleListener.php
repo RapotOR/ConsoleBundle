@@ -43,17 +43,6 @@ class Sf2genConsoleListener
             return;
         }
 
-        if ($response->headers->has('X-Debug-Token') && $response->isRedirect() && $this->interceptRedirects) {
-            if (null !== $session = $request->getSession()) {
-                // keep current flashes for one more request
-                $session->setFlashes($session->getFlashes());
-            }
-
-            $response->setContent($this->templating->render('Sf2genConsoleBundle:Console:toolbar_redirect.html.twig', array('location' => $response->headers->get('Location'))));
-            $response->setStatusCode(200);
-            $response->headers->remove('Location');
-        }
-
         if (!$response->headers->has('X-Debug-Token')
             || '3' === substr($response->getStatusCode(), 0, 1)
             || ($response->headers->has('Content-Type') && false === strpos($response->headers->get('Content-Type'), 'html'))
