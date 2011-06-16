@@ -49,7 +49,7 @@ class ConsoleController extends Controller
             if($p->isSuccessful())
                 return new Response( $output );
             else
-                return new Response('The command "'.$sf2Command.'" was not successfull.' , 200); // set to 200 to allow console display
+                return new Response('The command "'.$sf2Command.'" was not successful.' , 200); // set to 200 to allow console display
                 
         }
         return new Response('This request was not found.', 404); // request is not a POST request
