@@ -39,19 +39,25 @@ class Sf2genConsoleListener
         $response = $event->getResponse();
         $request = $event->getRequest();
 
-        if ($request->isXmlHttpRequest()) {
-            return;
-        }
-
-        if (!$response->headers->has('X-Debug-Token')
-            || '3' === substr($response->getStatusCode(), 0, 1)
-            || ($response->headers->has('Content-Type') && false === strpos($response->headers->get('Content-Type'), 'html'))
-            || 'html' !== $request->getRequestFormat()
-        ) {
+        if (!$this->needConsoleInjection($request, $response)) {
             return;
         }
 
         $this->injectToolbar($response);
+    }
+
+    public function needConsoleInjection(Request $request, Response $response)
+    {
+        if ($request->isXmlHttpRequest()
+            || !$response->headers->has('X-Debug-Token')
+            || '3' === substr($response->getStatusCode(), 0, 1)
+            || ($response->headers->has('Content-Type') && false === strpos($response->headers->get('Content-Type'), 'html'))
+            || 'html' !== $request->getRequestFormat()
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function injectToolbar(Response $response)
