@@ -59,7 +59,7 @@
             xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.uniqueid = (new Date()).getTime();
-            self.append('<span id="sf2gencdt-'+xhr.uniqueid+'">$ ' + self.colorize(txt) + ' : in progress...</span>' + self.htmlReturn);
+            self.append('<span id="sf2gencdt-'+xhr.uniqueid+'">$ ' + self.colorize(txt) + ' : in progress...' + self.htmlReturn + '</span>');
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4){
                     if(xhr.status == 200){
