@@ -42,10 +42,14 @@ class ConsoleController extends Controller
             );
             $p->run();
             
+            $output = str_replace("  ", "&nbsp;", nl2br($p->getOutput(), true));
+            if(empty($output))
+                $output = 'The command "'.$sf2Command.'" was successful.';
+            
             if($p->isSuccessful())
-                return new Response( str_replace("  ", "&nbsp;", nl2br($p->getOutput(), true)) );
+                return new Response( $output );
             else
-                return new Response('The process wasnt successfull...' , 200); // set to 200 to allow console display
+                return new Response('The command "'.$sf2Command.'" was not successfull.' , 200); // set to 200 to allow console display
                 
         }
         return new Response('This request was not found.', 404); // request is not a POST request
