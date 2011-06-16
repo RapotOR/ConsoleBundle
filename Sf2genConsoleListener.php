@@ -25,11 +25,6 @@ class Sf2genConsoleListener
         $this->cacheFile = 'commands.json';
     }
 
-    public function getVerbose()
-    {
-        return $this->verbose;
-    }
-
     public function onCoreResponse(FilterResponseEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
