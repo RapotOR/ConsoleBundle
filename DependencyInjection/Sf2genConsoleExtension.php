@@ -34,6 +34,7 @@ class Sf2genConsoleExtension extends Extension {
         }
         
         $container->setParameter('sf2gen_console.apps', $config['apps']);
+        $container->setParameter('sf2gen_console.new_process', $config['new_process']);
     }
     
     public function getApps(ContainerBuilder $container)

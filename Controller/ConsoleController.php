@@ -30,7 +30,7 @@ class ConsoleController extends Controller
 {
     private $filename = null;
     private $cacheDir = null;
-    private $forceNotShell = true;
+    
     public function requestAction()
     {
         $request = $this->get('request');
@@ -46,38 +46,37 @@ class ConsoleController extends Controller
             }
             
             //Try to run a separate shell process
-            try
-            {
-                if($this->forceNotShell) throw new \exception("Force not in shell");
-                $php = $this->getPhpExecutable();
-                $commandLine = $php.' console ';
-                if(!empty($sf2Command))
-                    $commandLine .= $sf2Command;
+            if($this->container->getParameter('sf2gen_console.new_process')) {
+                //Try to run a separate shell process
+                try
+                {
+                    $php = $this->getPhpExecutable();
+                    $commandLine = $php.' console ';
+                    if(!empty($sf2Command))
+                        $commandLine .= $sf2Command;
 
-                $p = new Process(
-                    $commandLine, 
-                    dirname( $this->get('kernel')->getRootDir() ) . DIRECTORY_SEPARATOR . $app, 
-                    null, 
-                    null, 
-                    30, 
-                    array(
-                        'suppress_errors' => false,
-                        'bypass_shell' => false,
-                    )
-                );
-                $p->run();
-                
-                $output = str_replace("  ", "&nbsp;", nl2br($p->getOutput(), true));
-                if(empty($output))
-                    $output = 'The command "'.$sf2Command.'" was successful.';
-                
-                if(!$p->isSuccessful())
-                    $output = 'The command "'.$sf2Command.'" was not successful.';
+                    $p = new Process(
+                        $commandLine, 
+                        dirname( $this->get('kernel')->getRootDir() ) . DIRECTORY_SEPARATOR . $app, 
+                        null, 
+                        null, 
+                        30, 
+                        array(
+                            'suppress_errors' => false,
+                            'bypass_shell' => false,
+                        )
+                    );
+                    $p->run();
+                    
+                    $output = $p->getOutput();
+                    
+                    if(!$p->isSuccessful())
+                        $output = 'The command "'.$sf2Command.'" was not successful.';
 
-                return new Response( $output );
-            }
-            catch(\Exception $e)
-            {
+                }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
+                    return new Response('The request failed when using a separated shell process. Try to use "new_process: false" in configuration.' ); 
+                }
+            }else{
                 //Try to execute a console within this process
                 try
                 {
@@ -92,7 +91,7 @@ class ConsoleController extends Controller
                     if(file_exists($this->filename)) unlink($this->filename);
                     $this->filename = $filename = "{$this->cacheDir}".time()."_commands";
                     $output = new StreamOutput(fopen($filename, 'w+'), StreamOutput::VERBOSITY_NORMAL, true, new OutputFormatterHtml());
-
+                    
                     //Start a kernel/console and an application
                     $env = $input->getParameterOption(array('--env', '-e'), 'dev');
                     $debug = !$input->hasParameterOption(array('--no-debug', ''));
@@ -103,30 +102,33 @@ class ConsoleController extends Controller
                     
                     //Find, initialize and run the real command
                     $run = $application->find($app)->run($input, $output);
-                    $result = file_get_contents($filename);
-                    $result = "<pre>$result</pre>";
-                    //$result = preg_replace("/  /", "&nbsp;&nbsp;", $result);
-                    //$result = preg_replace("/&nbsp; /", "&nbsp;&nbsp;", $result);
-                    //$result = preg_replace("/ &nbsp;/", "&nbsp;&nbsp;", $result);
-                    
-                    return new Response( $result );
-                    
-                }
-                catch( \Exception $e)
-                {                
-                  return new Response( "try app:$app command:$command run:$run output:$result" ); 
+                    $output = file_get_contents($filename);
+                }catch( \Exception $e){                
+                  return new Response('The request failed  when using same process.'); 
                 }
             }
+            
+            if(empty($output))
+                $output = 'The command "'.$sf2Command.'" was successful.';            
+            
+            return new Response( $this->convertOuput($output) );
         }
         
         return new Response('This request was not found.', 404); // request is not a POST request
     }
+    
     public function __destruct()
     {
         if(method_exists(get_parent_class($this), "__destruct"))
             parent::__destruct();
         if(file_exists($this->filename))
             unlink($this->filename);
+    }
+    
+    public function convertOuput($output)
+    {
+        // TODO : use OutputFormatterHtml
+        return '<pre>'.$output.'</pre>';
     }
     
     public function toolbarAction()

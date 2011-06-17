@@ -15,6 +15,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 //->booleanNode('toolbar')->defaultFalse()->end()
+                ->booleanNode('new_process')->defaultTrue()->end()
                 ->booleanNode('toolbar')->defaultTrue()->end()
                 ->booleanNode('all')->defaultFalse()->end()
                 ->booleanNode('local')->defaultTrue()->end()
