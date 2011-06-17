@@ -49,7 +49,7 @@
                 id="sf2gencdt-console-app" 
                 type="text" 
                 style="float:left;width:19%;background-color:#000;color:#fff;padding:2px;"
-                onkeyup="return sf2gen.console(event);"
+                onkeydown="return sf2gen.console(event);"
             />
 {% for item in apps %}
             <option value="{{ item }}">{{ item }}</option>
@@ -59,14 +59,14 @@
                 id="sf2gencdt-console-input" 
                 type="text" 
                 style="float:left;width:79%;background-color:#000;color:#fff;padding:2px;"
-                onkeyup="return sf2gen.console(event);"
+                onkeydown="return sf2gen.console(event);"
             />            
 {% else %}
             <input
                 id="sf2gencdt-console-input" 
                 type="text" 
                 style="width:98%;background-color:#000;color:#fff;padding:2px;"
-                onkeyup="return sf2gen.console(event);"
+                onkeydown="return sf2gen.console(event);"
             />
 {% endif %}
             <div id="sf2gencdt-console-ac" style="position:absolute;text-align:left;bottom:20px;left:0;display:none;"></div>
