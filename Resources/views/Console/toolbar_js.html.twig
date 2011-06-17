@@ -52,7 +52,9 @@
             return '<span style="color:#008000;">'+txt+'</span>';
         },
         request: function(txt){
-            this.sendCommands.push(txt); 
+            this.lastSentence = null; /*Reinitlast*/
+            this.sendCommands.push(txt);
+            this.selectedHistoryCommand=this.sendCommands.length;
             if(txt == '.')
                 txt = 'list';
             var self = this;
