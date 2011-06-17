@@ -103,7 +103,11 @@ class ConsoleController extends Controller
                     
                     //Find, initialize and run the real command
                     $run = $application->find($app)->run($input, $output);
-                    $result = nl2br(file_get_contents($filename));
+                    $result = file_get_contents($filename);
+                    $result = "<pre>$result</pre>";
+                    //$result = preg_replace("/  /", "&nbsp;&nbsp;", $result);
+                    //$result = preg_replace("/&nbsp; /", "&nbsp;&nbsp;", $result);
+                    //$result = preg_replace("/ &nbsp;/", "&nbsp;&nbsp;", $result);
                     
                     return new Response( $result );
                     

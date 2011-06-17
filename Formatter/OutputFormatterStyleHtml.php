@@ -23,24 +23,24 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 class OutputFormatterStyleHtml implements OutputFormatterStyleInterface
 {
     static protected $availableForegroundColors = array(
-        'black'     => 'black',
-        'red'       => 'red',
-        'green'     => 'green',
-        'yellow'    => 'yellow',
-        'blue'      => 'blue',
-        'magenta'   => 'magenta',
-        'cyan'      => 'cyan',
-        'white'     => 'white'
+        'black'     => 'color:black',
+        'red'       => 'color:red',
+        'green'     => 'color:#3C3',
+        'yellow'    => 'color:yellow',
+        'blue'      => 'color:blue',
+        'magenta'   => 'color:magenta',
+        'cyan'      => 'color:cyan',
+        'white'     => 'color:white'
     );
     static protected $availableBackgroundColors = array(
-        'black'     => 'black',
-        'red'       => 'red',
-        'green'     => 'green',
-        'yellow'    => 'yellow',
-        'blue'      => 'blue',
-        'magenta'   => 'magenta',
-        'cyan'      => '',
-        'white'     => 'white'
+        'black'     => 'background-color:black',
+        'red'       => 'background-color:red',
+        'green'     => 'background-color:green',
+        'yellow'    => 'background-color:yellow',
+        'blue'      => 'background-color:blue',
+        'magenta'   => 'background-color:magenta',
+        'cyan'      => 'background-color:cyan',
+        'white'     => 'background-color:white'
     );
     static protected $availableOptions = array(
         'bold'          => 'font-weight:bold',
@@ -199,10 +199,10 @@ class OutputFormatterStyleHtml implements OutputFormatterStyleInterface
     {
         $codes = array();
         if (null !== $this->foreground) {
-            $codes['fg'] = "color:{$this->foreground}";
+            $codes[] = $this->foreground;
         }
         if (null !== $this->background) {
-            $codes['bg'] = "background:{$this->background}";
+            $codes[] = $this->background;
         }
         if (count($this->options)) {
             $codes = array_merge($codes, $this->options);
