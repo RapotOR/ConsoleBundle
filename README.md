@@ -75,6 +75,7 @@ Installation
 
         # app/config/config.yml
         sf2gen_console:
+            new_process: true  # use a new shell process to launch the command
             toolbar: true  # display the toolbar in the current application ; to be disabled to use it in a third application.
             local: true   # add the current application to list of available apps ; if false, the current application is excluded.
             all: false   # will add all apps with a console available without using `apps` in configuration.
