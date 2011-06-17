@@ -12,6 +12,8 @@
         app: null,
         ac: null,
         commands: {{ commands|json_encode|raw }},
+        sendCommands: [],
+        selectedHistoryCommand: 0,
         selectedCommand: -1,
         init: function(){
             this.sf2gencdt = document.getElementById('sf2gencdt');
@@ -51,6 +53,7 @@
             return '<span style="color:#008000;">'+txt+'</span>';
         },
         request: function(txt){
+            this.sendCommands.push(txt); 
             if(txt == '.')
                 txt = 'list';
             var self = this;
@@ -77,15 +80,18 @@
         },
         console: function(e) {
             var keynum = (e.keyCode ? e.keyCode : e.which);
-            if(keynum == 13 && this.input.value.length > 0){
+            if((keynum == 13  || keynum == 9) && this.input.value.length > 0){
                 if(this.selectedCommand > -1){
                     this.input.value = this.ac.children[this.selectedCommand].innerHTML;
                     this.selectedCommand = -1;
                     this.ac.innerHTML = '';
                 }else{            
+                    this.lastSentence = null; /*Reinitlast*/
                     this.request(this.input.value);
                     this.input.value = '';
                 }
+                if(e.preventDefault) e.preventDefault();
+                return false;
             }else if(keynum == 37 || keynum == 39){
                 return;
             }else if(keynum == 38){
@@ -95,21 +101,46 @@
                           this.selectedCommand = this.ac.children.length - 1;
                     this.moveSelect(this.selectedCommand);
                     this.input.value = this.input.value;
+                    return false;
                 }else{
                     this.selectedCommand = -1;
                 }
+                this.showHistoryCommands(false);
             }else if(keynum == 40){
                 if(this.ac.children.length > 0){
                     this.selectedCommand++;
                     if(this.selectedCommand >= this.ac.children.length)
                           this.selectedCommand = 0;
                     this.moveSelect(this.selectedCommand);
+                    return false;
                 }else{
                     this.hideSelect();
                 }                
+                this.showHistoryCommands(true);
             }else{
                 this.showSelect(keynum);
             }
+        },
+        showHistoryCommands: function(next){
+            this.lastSentence = this.lastSentence==null ? this.input.value : this.lastSentence;
+            if(next) this.showNext();
+            else     this.showPrev();
+        },
+        showPrev: function(){
+            this.selectedHistoryCommand--;
+            if(this.selectedHistoryCommand<0)this.selectedHistoryCommand=0;
+            if(this.sendCommands[this.selectedHistoryCommand]!==undefined)
+                this.input.value = this.sendCommands[this.selectedHistoryCommand];
+            else
+                this.input.value = this.lastSentence;
+        },
+        showNext: function(){
+            this.selectedHistoryCommand++;
+            if(this.selectedHistoryCommand>this.sendCommands.length)this.selectedHistoryCommand=this.sendCommands.length;
+            if(this.sendCommands[this.selectedHistoryCommand]!==undefined)
+                this.input.value = this.sendCommands[this.selectedHistoryCommand];
+            else
+                this.input.value = this.lastSentence;
         },
         moveSelect: function(idx){
             for (var i = 0 ; i < this.ac.children.length ; i++){
