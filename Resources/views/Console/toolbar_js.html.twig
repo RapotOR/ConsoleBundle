@@ -53,7 +53,9 @@
             return '<span style="color:#008000;">'+txt+'</span>';
         },
         request: function(txt){
-            this.sendCommands.push(txt); 
+            this.lastSentence = null; /*Reinitlast*/
+            this.sendCommands.push(txt);
+            this.selectedHistoryCommand=this.sendCommands.length;
             if(txt == '.')
                 txt = 'list';
             var self = this;
@@ -80,7 +82,10 @@
         },
         console: function(e) {
             var keynum = (e.keyCode ? e.keyCode : e.which);
-            if((keynum == 13  || keynum == 9) && this.input.value.length > 0){
+            if(keynum == 27){/*escape*/
+                this.hideSelect();
+                this.input.value = '';
+            }else if((keynum == 13  || keynum == 9) && this.input.value.length > 0){/*enter or tab*/
                 if(this.selectedCommand > -1){
                     this.input.value = this.ac.children[this.selectedCommand].innerHTML;
                     this.selectedCommand = -1;
@@ -118,6 +123,7 @@
                     this.hideSelect();
                 }
             }else{
+                this.lastSentence = this.input.value;
                 this.showSelect(keynum);
             }
         },
