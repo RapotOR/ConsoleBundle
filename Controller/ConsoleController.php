@@ -81,6 +81,7 @@ class ConsoleController extends Controller
                 //Try to execute a console within this process
                 try
                 {
+                    $result = "";
                     //Prepare input 
                     $args = preg_split("/ /", trim($sf2Command));
                     array_unshift($args, "fakecommandline"); //To simulate the console's arguments 
@@ -98,6 +99,8 @@ class ConsoleController extends Controller
                     $debug = !$input->hasParameterOption(array('--no-debug', ''));
                     $kernel = new \AppKernel($env, $debug);
                     $kernel->boot();
+                    //$kernel = $this->container->get('kernel');
+                    $kernel->boot();
                     $application = new Application($kernel);
                     foreach ($kernel->getBundles() as $bundle)$bundle->registerCommands($application); //integrate all availables commands
                     
@@ -114,7 +117,7 @@ class ConsoleController extends Controller
                 }
                 catch( \Exception $e)
                 {                
-                  return new Response( "try app:$app command:$command run:$run output:$result" ); 
+                  return new Response( nl2br("Invalid command app: $app\nError:\n ".$e->getMessage()) ); 
                 }
             }
         }
