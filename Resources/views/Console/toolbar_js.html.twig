@@ -13,7 +13,7 @@
         ac: null,
         commands: {{ commands|json_encode|raw }},
         sendCommands: [],
-        selectedHistoryCommand: 0,
+        selectedHistoryCommand: -1,
         selectedCommand: -1,
         init: function(){
             this.sf2gencdt = document.getElementById('sf2gencdt');
@@ -103,9 +103,9 @@
                     this.input.value = this.input.value;
                     return false;
                 }else{
-                    this.selectedCommand = -1;
+                    this.hideSelect();
+                    this.showHistoryCommands(false);                    
                 }
-                this.showHistoryCommands(false);
             }else if(keynum == 40){
                 if(this.ac.children.length > 0){
                     this.selectedCommand++;
@@ -114,9 +114,9 @@
                     this.moveSelect(this.selectedCommand);
                     return false;
                 }else{
+                    this.showHistoryCommands(true);                
                     this.hideSelect();
-                }                
-                this.showHistoryCommands(true);
+                }
             }else{
                 this.showSelect(keynum);
             }
@@ -128,7 +128,9 @@
         },
         showPrev: function(){
             this.selectedHistoryCommand--;
-            if(this.selectedHistoryCommand<0)this.selectedHistoryCommand=0;
+            if(this.selectedHistoryCommand<-1) /* value -1 equal to lastSentence */
+                this.selectedHistoryCommand=this.sendCommands.length-1;
+            
             if(this.sendCommands[this.selectedHistoryCommand]!==undefined)
                 this.input.value = this.sendCommands[this.selectedHistoryCommand];
             else
@@ -136,7 +138,8 @@
         },
         showNext: function(){
             this.selectedHistoryCommand++;
-            if(this.selectedHistoryCommand>this.sendCommands.length)this.selectedHistoryCommand=this.sendCommands.length;
+            if(this.selectedHistoryCommand>this.sendCommands.length)
+                this.selectedHistoryCommand=0;
             if(this.sendCommands[this.selectedHistoryCommand]!==undefined)
                 this.input.value = this.sendCommands[this.selectedHistoryCommand];
             else
