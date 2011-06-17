@@ -55,7 +55,7 @@
         request: function(txt){
             this.lastSentence = null; /*Reinitlast*/
             this.sendCommands.push(txt);
-            this.selectedHistoryCommand=this.sendCommands.length;
+            this.selectedHistoryCommand = -1;
             if(txt == '.')
                 txt = 'list';
             var self = this;
@@ -123,7 +123,6 @@
                     this.hideSelect();
                 }
             }else{
-                this.lastSentence = this.input.value;
                 this.showSelect(keynum);
             }
         },
@@ -134,19 +133,19 @@
         },
         showPrev: function(){
             this.selectedHistoryCommand--;
-            if(this.selectedHistoryCommand<-1) /* value -1 equal to lastSentence */
+            if(this.selectedHistoryCommand < -1) /* value -1 equal to lastSentence */
                 this.selectedHistoryCommand=this.sendCommands.length-1;
             
-            if(this.sendCommands[this.selectedHistoryCommand]!==undefined)
+            if(this.sendCommands[this.selectedHistoryCommand] !== undefined)
                 this.input.value = this.sendCommands[this.selectedHistoryCommand];
             else
                 this.input.value = this.lastSentence;
         },
         showNext: function(){
             this.selectedHistoryCommand++;
-            if(this.selectedHistoryCommand>this.sendCommands.length)
-                this.selectedHistoryCommand=0;
-            if(this.sendCommands[this.selectedHistoryCommand]!==undefined)
+            if(this.selectedHistoryCommand > this.sendCommands.length)
+                this.selectedHistoryCommand = 0;
+            if(this.sendCommands[this.selectedHistoryCommand] !== undefined)
                 this.input.value = this.sendCommands[this.selectedHistoryCommand];
             else
                 this.input.value = this.lastSentence;

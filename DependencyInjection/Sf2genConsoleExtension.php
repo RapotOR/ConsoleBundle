@@ -8,12 +8,18 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Parser;
 
 class Sf2genConsoleExtension extends Extension {
     public function load(array $configs, ContainerBuilder $container) 
     {
         $processor = new Processor();
         $configuration = new Configuration();
+
+        $yaml = new Parser();
+        $yaml_config = $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml'));
+        $configs = array_merge(array($yaml_config), $configs);
+
         $config = $processor->processConfiguration($configuration, $configs);    
         
         if ($config['toolbar']) {

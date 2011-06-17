@@ -74,14 +74,13 @@ class ConsoleController extends Controller
                         $output = 'The command "'.$sf2Command.'" was not successful.';
 
                 }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
-                    return new Response( nl2br('The request failed when using a separated shell process. Try to use "new_process: false" in configuration.\n' . $e->getMessage() ) ); 
+                    return new Response(nl2br('The request failed when using a separated shell process. Try to use "new_process: false" in configuration.\n Error : '.$e->getMessage())); 
                 }
             }else{
                 //Try to execute a console within this process
                 //TODO: fix cache:clear issue
                 try
                 {
-                    $result = "";
                     //Prepare input 
                     $args = preg_split("/ /", trim($sf2Command));
                     array_unshift($args, "fakecommandline"); //To simulate the console's arguments 
@@ -100,17 +99,16 @@ class ConsoleController extends Controller
                     $debug = !$input->hasParameterOption(array('--no-debug', ''));
                     $kernel = new \AppKernel($env, $debug);
                     $kernel->boot();
-                    
                     $application = new Application($kernel);
                     foreach ($kernel->getBundles() as $bundle)
                         $bundle->registerCommands($application); //integrate all availables commands
                     
                     //Find, initialize and run the real command
                     $run = $application->find($app)->run($input, $output);
-
+                    
                     $output = file_get_contents($filename);
-                }catch( \Exception $e){                
-                  return new Response( nl2br('The request failed  when using single process.\n' . $e->getMessage() ) ); 
+                }catch( \Exception $e){
+                    return new Response(nl2br('The request failed  when using same process.\n Error : '.$e->getMessage())); 
                 }
             }
             
