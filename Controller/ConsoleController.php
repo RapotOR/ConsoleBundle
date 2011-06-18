@@ -63,17 +63,14 @@ class ConsoleController extends Controller
                         null, 
                         30, 
                         array(
-                            'suppress_errors' => false,
-                            'bypass_shell' => false,
+                            'suppress_errors'   => false,
+                            'bypass_shell'      => false,
                         )
                     );
                     $p->run();
                     
                     $output = $p->getOutput();
                     
-                    if(!$p->isSuccessful())
-                        return new Response( nl2br('The command "' . $sf2Command . '" was not successful. Error: ' . $p->getErrorOutput() ) ); 
-
                 }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
                     return new Response( nl2br('The request failed when using a separated shell process. Try to use "new_process: false" in configuration.\n' . $e->getMessage() ) ); 
                 }
