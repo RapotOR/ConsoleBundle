@@ -35,7 +35,8 @@ class ConsoleController extends Controller
     {
         $request = $this->get('request');
         if ($request->isXmlHttpRequest() && $request->getMethod() == 'POST') {
-            $sf2Command = $request->request->get('command'); // retrieve command string
+            // retrieve command string
+            $sf2Command = stripslashes($request->request->get('command'));
             if($sf2Command == '.') // this trick is used to give the possibility to have "php app/console" equivalent
                 $sf2Command = 'list';
 
@@ -51,13 +52,13 @@ class ConsoleController extends Controller
                 try
                 {
                     $php = $this->getPhpExecutable();
-                    $commandLine = $php.' console ';
+                    $commandLine = $php . ' ' . $app . '/' . 'console ';
                     if(!empty($sf2Command))
                         $commandLine .= $sf2Command;
-
+                    
                     $p = new Process(
                         $commandLine, 
-                        dirname( $this->get('kernel')->getRootDir() ) . DIRECTORY_SEPARATOR . $app, 
+                        dirname( $this->get('kernel')->getRootDir() ), // the cwd directory must be that for init:bundle
                         null, 
                         null, 
                         30, 
