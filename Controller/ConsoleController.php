@@ -71,7 +71,7 @@ class ConsoleController extends Controller
                     $output = $p->getOutput();
                     
                     if(!$p->isSuccessful())
-                        $output = 'The command "'.$sf2Command.'" was not successful.';
+                        $output = 'The command "' . $sf2Command . '" was not successful.\nError: ' . $p->getErrorOutput();
 
                 }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
                     return new Response( nl2br('The request failed when using a separated shell process. Try to use "new_process: false" in configuration.\n' . $e->getMessage() ) ); 
