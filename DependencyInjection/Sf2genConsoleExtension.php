@@ -17,11 +17,10 @@ class Sf2genConsoleExtension extends Extension {
         $configuration = new Configuration();
 
         $yaml = new Parser();
-        $yaml_config = $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml'));
-        $configs = array_merge(array($yaml_config), $configs);
+        $configs[] = $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml'));
 
         $config = $processor->processConfiguration($configuration, $configs);    
-        
+
         if ($config['toolbar']) {
             $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
             $loader->load('toolbar.yml');
