@@ -1,0 +1,6 @@
+#Every value here can be rewrite sf2gen_console under in a general config file
+new_process: true
+toolbar: true
+all: true
+local: true
+apps: []
