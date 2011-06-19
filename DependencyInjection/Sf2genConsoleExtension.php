@@ -17,7 +17,7 @@ class Sf2genConsoleExtension extends Extension {
         $configuration = new Configuration();
 
         $yaml = new Parser();
-        $configs[] = $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml'));
+        array_unshift($configs, $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml')));
 
         $config = $processor->processConfiguration($configuration, $configs);    
 
