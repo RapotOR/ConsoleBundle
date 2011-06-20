@@ -25,6 +25,9 @@ use Sf2gen\Bundle\ConsoleBundle\Formatter\OutputFormatterHtml;
  * @author Nicolas de Marqué
  *
  * @api
+ * @todo nico : add the output formatter in the core
+ * @todo nico : app validity test is not really efficient
+ * @todo ced  : fix cache:clear issue when single process method is used:  ** Fatal error: Cannot redeclare class appdevUrlMatcher in xxxx\appdevUrlMatcher.php on line 114
  */
 class ConsoleController extends Controller
 {

@@ -10,6 +10,14 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * Listener for console
+ *
+ * @author Cédric Lahouste
+ * @author winzou
+ *
+ * @api
+ */
 class Sf2genConsoleListener
 {
     protected $templating;
