@@ -74,8 +74,16 @@ class ConsoleController extends Controller
                     
                     $output = $p->getOutput();
                     
+                    /*
+                    if the process is not successful:
+                    - 1) Symfony throws an error and ouput is not empty; continue without Exception.
+                    - 2) Process throws an error and ouput is empty => Exception!
+                    */                    
+                    if(!$p->isSuccessful() && empty($output))
+                        throw new \RuntimeException('Unabled to run the process.');
+                    
                 }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
-                    return new Response(nl2br('The request failed when using a separated shell process. Try to use "new_process: false" in configuration.\n Error : '.$e->getMessage())); 
+                    return new Response(nl2br("The request failed when using a separated shell process. Try to use 'new_process: false' in configuration.\n Error : ".$e->getMessage())); 
                 }
             }else{
                 //Try to execute a console within this process
@@ -109,7 +117,7 @@ class ConsoleController extends Controller
                     
                     $output = file_get_contents($filename);
                 }catch( \Exception $e){
-                    return new Response(nl2br('The request failed  when using same process.\n Error : '.$e->getMessage())); 
+                    return new Response(nl2br("The request failed  when using same process.\n Error : ".$e->getMessage())); 
                 }
             }
             
@@ -157,9 +165,10 @@ class ConsoleController extends Controller
     public function getPhpExecutable()
     {
         $executableFinder = new PhpExecutableFinder();
-        if (false === $php = $executableFinder->find()) {
-            throw new \RuntimeException('Unable to find the PHP executable.');
-        }
+        $php = $executableFinder->find();
+        if (empty($php))
+            throw new \RuntimeException('Unable to find the PHP executable. Verify your PATH variable.');
+        
         return $php;
     }
     
