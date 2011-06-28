@@ -98,7 +98,7 @@ class ConsoleController extends Controller
 
                     //Prepare output
                     ob_start();
-                    $output = new StreamOutput(fopen("php://output", 'w+'), StreamOutput::VERBOSITY_NORMAL, true, new OutputFormatterHtml());
+                    $output = new StreamOutput(fopen("php://output", 'w'), StreamOutput::VERBOSITY_NORMAL, true, new OutputFormatterHtml(true));
 
                     //Start a kernel/console and an application
                     $env = $input->getParameterOption(array('--env', '-e'), 'dev');
@@ -112,7 +112,9 @@ class ConsoleController extends Controller
                     //Find, initialize and run the real command
                     $run = $application->find($app)->run($input, $output);
 
-                    $output = ob_get_clean();// file_get_contents($filename);
+                    $output = ob_get_contents();
+
+                    ob_end_clean();
                 }catch( \Exception $e){
                     return new Response(nl2br("The request failed  when using same process.\n Error : ".$e->getMessage()));
                 }
