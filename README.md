@@ -57,7 +57,7 @@ Installation
           
   4. Add the following ressource to your routing_dev.yml:
         
-        // app/config/routing_dev.php
+        // app/config/routing_dev.yml
         _sf2gencdt:
             resource: "@Sf2genConsoleBundle/Resources/config/routing.yml"
             prefix:   /_sf2gencdt    

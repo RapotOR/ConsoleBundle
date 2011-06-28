@@ -10,17 +10,23 @@
  */
 namespace Sf2gen\Bundle\ConsoleBundle\Formatter;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
+
 
 /**
  * Formatter class for console output.
  *
  * @author ndmf
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
- * 
+ *
  * @api
  */
 class OutputFormatterHtml extends OutputFormatter
 {
+
+    const FORMAT_PATTERN = '#<([a-z][a-z0-9_=;-]+)>(.*?)</\\1?>#is';
+
     protected $decorated;
     protected $styles = array();
 
@@ -45,6 +51,89 @@ class OutputFormatterHtml extends OutputFormatter
             $this->setStyle($name, $style);
         }
     }
+    /**
+     * Sets the decorated flag.
+     *
+     * @param Boolean $decorated Whether to decorated the messages or not
+     *
+     * @api
+     */
+    public function setDecorated($decorated)
+    {
+        $this->decorated = (Boolean) $decorated;
+    }
+
+    /**
+     * Gets the decorated flag.
+     *
+     * @return Boolean true if the output will decorate messages, false otherwise
+     *
+     * @api
+     */
+    public function isDecorated()
+    {
+        return $this->decorated;
+    }
+
+    /**
+     * Sets a new style.
+     *
+     * @param string                        $name  The style name
+     * @param OutputFormatterStyleInterface $style The style instance
+     *
+     * @api
+     */
+    function setStyle($name, OutputFormatterStyleInterface $style)
+    {
+        $this->styles[strtolower($name)] = $style;
+    }
+
+    /**
+     * Checks if output formatter has style with specified name.
+     *
+     * @param   string  $name
+     *
+     * @return  Boolean
+     *
+     * @api
+     */
+    public function hasStyle($name)
+    {
+        return isset($this->styles[strtolower($name)]);
+    }
+
+    /**
+     * Gets style options from style with specified name.
+     *
+     * @param   string  $name
+     *
+     * @return  OutputFormatterStyleInterface
+     *
+     * @api
+     */
+    public function getStyle($name)
+    {
+        if (!$this->hasStyle($name)) {
+            throw new \InvalidArgumentException('Undefined style: '.$name);
+        }
+
+        return $this->styles[strtolower($name)];
+    }
+
+    /**
+     * Formats a message according to the given styles.
+     *
+     * @param  string $message The message to style
+     *
+     * @return string The styled message
+     *
+     * @api
+     */
+    public function format($message)
+    {
+        return preg_replace_callback(self::FORMAT_PATTERN, array($this, 'replaceStyle'), $message);
+    }
+
     /**
      * Replaces style of the output.
      *
@@ -71,7 +160,6 @@ class OutputFormatterHtml extends OutputFormatter
         return $style->apply($this->format($match[2]));
     }
 
-
     /**
      * Tries to create new style instance from string.
      *
@@ -85,7 +173,7 @@ class OutputFormatterHtml extends OutputFormatter
             return false;
         }
 
-        $style = new OutputFormatterStyleHtml();
+        $style = new OutputFormatterStyle();
         foreach ($matches as $match) {
             array_shift($match);
 
