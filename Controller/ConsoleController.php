@@ -33,7 +33,7 @@ class ConsoleController extends Controller
 {
     private $filename = null;
     private $cacheDir = null;
-    
+
     public function requestAction()
     {
         $request = $this->get('request');
@@ -48,7 +48,7 @@ class ConsoleController extends Controller
             if(!in_array($app, $this->container->getParameter('sf2gen_console.apps') )) {
                 return new Response('This application is not allowed...' , 200); // set to 200 to allow console display
             }
-            
+
             //Try to run a separate shell process
             if($this->container->getParameter('sf2gen_console.new_process')) {
                 //Try to run a separate shell process
@@ -58,51 +58,48 @@ class ConsoleController extends Controller
                     $commandLine = $php . ' ' . $app . '/' . 'console ';
                     if(!empty($sf2Command))
                         $commandLine .= $sf2Command;
-                    
+
                     $p = new Process(
-                        $commandLine, 
+                        $commandLine,
                         dirname( $this->get('kernel')->getRootDir() ), // the cwd directory must be that for init:bundle
-                        null, 
-                        null, 
-                        30, 
+                        null,
+                        null,
+                        30,
                         array(
                             'suppress_errors'   => false,
                             'bypass_shell'      => false,
                         )
                     );
                     $p->run();
-                    
+
                     $output = $p->getOutput();
-                    
+
                     /*
                     if the process is not successful:
                     - 1) Symfony throws an error and ouput is not empty; continue without Exception.
                     - 2) Process throws an error and ouput is empty => Exception!
-                    */                    
+                    */
                     if(!$p->isSuccessful() && empty($output))
                         throw new \RuntimeException('Unabled to run the process.');
-                    
+
                 }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
-                    return new Response(nl2br("The request failed when using a separated shell process. Try to use 'new_process: false' in configuration.\n Error : ".$e->getMessage())); 
+                    return new Response(nl2br("The request failed when using a separated shell process. Try to use 'new_process: false' in configuration.\n Error : ".$e->getMessage()));
                 }
             }else{
                 //Try to execute a console within this process
                 //TODO: fix cache:clear issue
                 try
                 {
-                    //Prepare input 
+                    //Prepare input
                     $args = preg_split("/ /", trim($sf2Command));
-                    array_unshift($args, "fakecommandline"); //To simulate the console's arguments 
+                    array_unshift($args, "fakecommandline"); //To simulate the console's arguments
                     $app = $args[1];
                     $input = new ArgvInput($args);
-                    
+
                     //Prepare output
-                    $this->cacheDir = $this->container->get('kernel')->getCacheDir() . DIRECTORY_SEPARATOR . 'sf2genconsole' . DIRECTORY_SEPARATOR;
-                    if(file_exists($this->filename))
-                        unlink($this->filename);
-                    $this->filename = $filename = "{$this->cacheDir}".time()."_commands";
-                    $output = new StreamOutput(fopen($filename, 'w+'), StreamOutput::VERBOSITY_NORMAL, true, new OutputFormatterHtml());
-                    
+                    ob_start();
+                    $output = new StreamOutput(fopen("php://output", 'w+'), StreamOutput::VERBOSITY_NORMAL, true, new OutputFormatterHtml());
+
                     //Start a kernel/console and an application
                     $env = $input->getParameterOption(array('--env', '-e'), 'dev');
                     $debug = !$input->hasParameterOption(array('--no-debug', ''));
@@ -111,40 +108,32 @@ class ConsoleController extends Controller
                     $application = new Application($kernel);
                     foreach ($kernel->getBundles() as $bundle)
                         $bundle->registerCommands($application); //integrate all availables commands
-                    
+
                     //Find, initialize and run the real command
                     $run = $application->find($app)->run($input, $output);
-                    
-                    $output = file_get_contents($filename);
+
+                    $output = ob_get_clean();// file_get_contents($filename);
                 }catch( \Exception $e){
-                    return new Response(nl2br("The request failed  when using same process.\n Error : ".$e->getMessage())); 
+                    return new Response(nl2br("The request failed  when using same process.\n Error : ".$e->getMessage()));
                 }
             }
-            
+
             // common response for both methods
             if(empty($output))
-                $output = 'The command "'.$sf2Command.'" was successful.';            
-            
+                $output = 'The command "'.$sf2Command.'" was successful.';
+
             return new Response( $this->convertOuput($output) );
         }
-        
+
         return new Response('This request was not found.', 404); // request is not a POST request
     }
-    
-    public function __destruct()
-    {
-        if(method_exists(get_parent_class($this), "__destruct"))
-            parent::__destruct();
-        if(file_exists($this->filename))
-            unlink($this->filename);
-    }
-    
+
     public function convertOuput($output)
     {
         // TODO : use OutputFormatterHtml
         return '<pre>'.$output.'</pre>';
     }
-    
+
     public function toolbarAction()
     {
         $request = $this->container->get('request');
@@ -161,15 +150,15 @@ class ConsoleController extends Controller
             'apps'         => $this->container->getParameter('sf2gen_console.apps'),
         ));
     }
-    
+
     public function getPhpExecutable()
     {
         $executableFinder = new PhpExecutableFinder();
         $php = $executableFinder->find();
         if (empty($php))
             throw new \RuntimeException('Unable to find the PHP executable. Verify your PATH variable.');
-        
+
         return $php;
     }
-    
+
 }
