@@ -24,7 +24,7 @@ class Sf2genConsoleListener
     protected $kernel;
     protected $cacheDir;
     protected $cacheFile;
-    
+
     public function __construct(Kernel $kernel, TwigEngine $templating)
     {
         $this->templating = $templating;
@@ -33,7 +33,7 @@ class Sf2genConsoleListener
         $this->cacheFile = 'commands.json';
     }
 
-    public function onCoreResponse(FilterResponseEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
             return;
@@ -86,31 +86,31 @@ class Sf2genConsoleListener
             $response->setContent($content);
         }
     }
-    
+
     protected function getCommands() {
-        
+
         $commands = $this->getCacheContent();
-        
+
         if($commands === false) {
             if(!is_dir( $this->cacheDir ))
-                mkdir( $this->cacheDir, 777 );
-            
+                mkdir( $this->cacheDir, 0777 );
+
             $commands = $this->fetchCommands();
-            
+
             file_put_contents( $this->cacheDir . $this->cacheFile, json_encode($commands) );
         }else{
             $commands = json_decode($commands);
         }
-        
+
         return $commands;
     }
-    
+
     protected function fetchCommands() {
         $commands = array();
         foreach ($this->kernel->getBundles() as $bundle) {
             $finder = new Finder();
             $finder->files()->name('*Command.php')->in($bundle->getPath());
-            
+
             foreach ($finder as $file) {
                 $content = file_get_contents($bundle->getPath() . DIRECTORY_SEPARATOR . $file->getRelativePathName());
                 if (preg_match("/setName\((['\"])([a-z:]*)(['\"])\)/", $content, $matches)) {
@@ -122,7 +122,7 @@ class Sf2genConsoleListener
         }
         return $commands;
     }
-    
+
     protected function getCacheContent() {
         if(is_file( $this->cacheDir . $this->cacheFile )){
             return file_get_contents( $this->cacheDir . $this->cacheFile );

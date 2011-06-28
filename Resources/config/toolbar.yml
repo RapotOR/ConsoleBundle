@@ -1,9 +1,9 @@
 parameters:
-    sf2gen.console.class:      Sf2gen\Bundle\ConsoleBundle\Sf2genConsoleListener
+    sf2gen.console.class: Sf2gen\Bundle\ConsoleBundle\Sf2genConsoleListener
 
 services:
     sf2gen.toolbar:
         class: %sf2gen.console.class%
         arguments: [@kernel, @templating.engine.twig]
         tags:
-            - { name: kernel.listener, event: core.response, method: onCoreResponse, priority: -128 }
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -128 }
