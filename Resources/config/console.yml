@@ -1,5 +1,5 @@
 #Every value here can be rewrite sf2gen_console under in a general config file
-new_process: true
+new_process: false
 toolbar: true
 all: false
 local: true
