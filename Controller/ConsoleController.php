@@ -27,7 +27,6 @@ use Sf2gen\Bundle\ConsoleBundle\Formatter\OutputFormatterHtml;
  * @api
  * @todo nico : add the output formatter in the core
  * @todo nico : app validity test is not really efficient
- * @todo ced  : fix cache:clear issue when single process method is used:  ** Fatal error: Cannot redeclare class appdevUrlMatcher in xxxx\appdevUrlMatcher.php on line 114
  */
 class ConsoleController extends Controller
 {
@@ -40,9 +39,15 @@ class ConsoleController extends Controller
         if ($request->isXmlHttpRequest() && $request->getMethod() == 'POST') {
             // retrieve command string
             $sf2Command = stripslashes($request->request->get('command'));
+            
             if($sf2Command == '.') // this trick is used to give the possibility to have "php app/console" equivalent
+            {    
                 $sf2Command = 'list';
-
+            }
+            elseif($sf2Command == 'cache:clear')  // fix issue #11
+            {
+                $sf2Command .= ' --no-warmup';
+            }
             //TODO: not really efficient
             $app = ( $request->request->get('app') ? $request->request->get('app') : basename( $this->get('kernel')->getRootDir() ) );
             if(!in_array($app, $this->container->getParameter('sf2gen_console.apps') )) {
