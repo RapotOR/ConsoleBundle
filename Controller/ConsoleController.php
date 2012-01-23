@@ -99,7 +99,6 @@ class ConsoleController extends Controller
                     //Prepare input
                     $args = preg_split("/ /", trim($sf2Command));
                     array_unshift($args, "fakecommandline"); //To simulate the console's arguments
-                    $app = $args[1];
                     $input = new ArgvInput($args);
 
                     //Prepare output
@@ -130,13 +129,13 @@ class ConsoleController extends Controller
                 $output = 'The command "'.$sf2Command.'" was successful.';
             }
 
-            return new Response($this->convertOuput($output));
+            return new Response($this->convertOutput($output));
         }
 
         return new Response('This request was not found.', 404); // request is not a POST request
     }
 
-    public function convertOuput($output)
+    public function convertOutput($output)
     {
         // TODO : use OutputFormatterHtml
         return '<pre>'.$output.'</pre>';
@@ -151,7 +150,7 @@ class ConsoleController extends Controller
             $session->setFlashes($session->getFlashes());
         }
 
-        $position = false === strpos($this->container->get('request')->headers->get('user-agent'), 'Mobile') ? 'fixed' : 'absolute';
+        $position = false === strpos($request->headers->get('user-agent'), 'Mobile') ? 'fixed' : 'absolute';
 
         return $this->container->get('templating')->renderResponse('Sf2genConsoleBundle:Console:toolbar.html.twig', array(
             'position'     => $position,
