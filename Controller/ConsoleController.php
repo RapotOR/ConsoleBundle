@@ -30,9 +30,6 @@ use Sf2gen\Bundle\ConsoleBundle\Formatter\OutputFormatterHtml;
  */
 class ConsoleController extends Controller
 {
-    private $filename = null;
-    private $cacheDir = null;
-
     public function requestAction()
     {
         $request = $this->get('request');
