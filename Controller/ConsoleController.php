@@ -110,14 +110,12 @@ class ConsoleController extends Controller
                     $env = $input->getParameterOption(array('--env', '-e'), 'dev');
                     $debug = !$input->hasParameterOption(array('--no-debug', ''));
                     $kernel = new \AppKernel($env, $debug);
-                    $kernel->boot();
+
                     $application = new Application($kernel);
-                    foreach ($kernel->getBundles() as $bundle) {
-                        $bundle->registerCommands($application); //integrate all availables commands
-                    }
+                    $application->setAutoExit(false);
 
                     //Find, initialize and run the real command
-                    $run = $application->find($app)->run($input, $output);
+                    $run = $application->run($input, $output);
 
                     $output = ob_get_contents();
 
