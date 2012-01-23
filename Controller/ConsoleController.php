@@ -39,34 +39,35 @@ class ConsoleController extends Controller
         if ($request->isXmlHttpRequest() && $request->getMethod() == 'POST') {
             // retrieve command string
             $sf2Command = stripslashes($request->request->get('command'));
-            
-            if($sf2Command == '.') // this trick is used to give the possibility to have "php app/console" equivalent
-            {    
+
+            if ($sf2Command == '.') {
+                // this trick is used to give the possibility to have "php app/console" equivalent
                 $sf2Command = 'list';
-            }
-            elseif($sf2Command == 'cache:clear')  // fix issue #11
-            {
+            } elseif ($sf2Command == 'cache:clear') {
+                // warming up the cache cannot be done after clearing it
+                // fix issue #11
                 $sf2Command .= ' --no-warmup';
             }
             //TODO: not really efficient
-            $app = ( $request->request->get('app') ? $request->request->get('app') : basename( $this->get('kernel')->getRootDir() ) );
-            if(!in_array($app, $this->container->getParameter('sf2gen_console.apps') )) {
+            $rootFolder = basename($this->container->getParameter('kernel.root_dir'));
+            $app = $request->request->get('app') ?: $rootFolder;
+            if (!in_array($app, $this->container->getParameter('sf2gen_console.apps') )) {
                 return new Response('This application is not allowed...' , 200); // set to 200 to allow console display
             }
 
             //Try to run a separate shell process
-            if($this->container->getParameter('sf2gen_console.new_process')) {
+            if ($this->container->getParameter('sf2gen_console.new_process')) {
                 //Try to run a separate shell process
-                try
-                {
+                try {
                     $php = $this->getPhpExecutable();
                     $commandLine = $php . ' ' . $app . '/' . 'console ';
-                    if(!empty($sf2Command))
+                    if(!empty($sf2Command)) {
                         $commandLine .= $sf2Command;
+                    }
 
                     $p = new Process(
                         $commandLine,
-                        dirname( $this->get('kernel')->getRootDir() ), // the cwd directory must be that for init:bundle
+                        $rootFolder,
                         null,
                         null,
                         30,
@@ -84,17 +85,17 @@ class ConsoleController extends Controller
                     - 1) Symfony throws an error and ouput is not empty; continue without Exception.
                     - 2) Process throws an error and ouput is empty => Exception!
                     */
-                    if(!$p->isSuccessful() && empty($output))
+                    if (!$p->isSuccessful() && empty($output)) {
                         throw new \RuntimeException('Unabled to run the process.');
+                    }
 
-                }catch( \Exception $e){ // not trying the other method. It is interesting to know where it is not working (single process or not)
+                } catch(\Exception $e) { // not trying the other method. It is interesting to know where it is not working (single process or not)
                     return new Response(nl2br("The request failed when using a separated shell process. Try to use 'new_process: false' in configuration.\n Error : ".$e->getMessage()));
                 }
-            }else{
+            } else {
                 //Try to execute a console within this process
                 //TODO: fix cache:clear issue
-                try
-                {
+                try {
                     //Prepare input
                     $args = preg_split("/ /", trim($sf2Command));
                     array_unshift($args, "fakecommandline"); //To simulate the console's arguments
@@ -111,8 +112,9 @@ class ConsoleController extends Controller
                     $kernel = new \AppKernel($env, $debug);
                     $kernel->boot();
                     $application = new Application($kernel);
-                    foreach ($kernel->getBundles() as $bundle)
+                    foreach ($kernel->getBundles() as $bundle) {
                         $bundle->registerCommands($application); //integrate all availables commands
+                    }
 
                     //Find, initialize and run the real command
                     $run = $application->find($app)->run($input, $output);
@@ -120,16 +122,17 @@ class ConsoleController extends Controller
                     $output = ob_get_contents();
 
                     ob_end_clean();
-                }catch( \Exception $e){
+                } catch(\Exception $e){
                     return new Response(nl2br("The request failed  when using same process.\n Error : ".$e->getMessage()));
                 }
             }
 
             // common response for both methods
-            if(empty($output))
+            if (empty($output)) {
                 $output = 'The command "'.$sf2Command.'" was successful.';
+            }
 
-            return new Response( $this->convertOuput($output) );
+            return new Response($this->convertOuput($output));
         }
 
         return new Response('This request was not found.', 404); // request is not a POST request
@@ -162,10 +165,10 @@ class ConsoleController extends Controller
     {
         $executableFinder = new PhpExecutableFinder();
         $php = $executableFinder->find();
-        if (empty($php))
+        if (empty($php)) {
             throw new \RuntimeException('Unable to find the PHP executable. Verify your PATH variable.');
+        }
 
         return $php;
     }
-
 }

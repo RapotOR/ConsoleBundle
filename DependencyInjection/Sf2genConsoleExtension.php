@@ -10,8 +10,9 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Parser;
 
-class Sf2genConsoleExtension extends Extension {
-    public function load(array $configs, ContainerBuilder $container) 
+class Sf2genConsoleExtension extends Extension
+{
+    public function load(array $configs, ContainerBuilder $container)
     {
         $processor = new Processor();
         $configuration = new Configuration();
@@ -19,48 +20,48 @@ class Sf2genConsoleExtension extends Extension {
         $yaml = new Parser();
         array_unshift($configs, $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml')));
 
-        $config = $processor->processConfiguration($configuration, $configs);    
+        $config = $processor->processConfiguration($configuration, $configs);
 
         if ($config['toolbar']) {
             $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
             $loader->load('toolbar.yml');
         }
-        
+
         $local = basename($container->getParameter('kernel.root_dir'));
-        
+
         if ($config['all']) {
             $config['apps'] = array_merge($config['apps'], $this->getApps($container));
         }
-        
+
         $config['apps'] = array_unique($config['apps']);
-        
-        if($config['local'] && array_search($local, $config['apps']) === false) {
+
+        if ($config['local'] && array_search($local, $config['apps']) === false) {
             $config['apps'][] = $local;
         }
-        
+
         $container->setParameter('sf2gen_console.apps', $config['apps']);
         $container->setParameter('sf2gen_console.new_process', $config['new_process']);
     }
-    
+
     public function getApps(ContainerBuilder $container)
     {
         $apps = array();
-        
+
         $finder = new Finder();
         $finder->files()
                ->depth('== 1')
                ->name('console')
-               ->in( $container->getParameter('kernel.root_dir') . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR );
-        
+               ->in($container->getParameter('kernel.root_dir') . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR);
+
         foreach ($finder as $file) {
             $apps[] = $file->getRelativePath();
         }
-        
+
         return $apps;
     }
-    
+
     public function getAlias()
     {
         return 'sf2gen_console';
-    }    
+    }
 }

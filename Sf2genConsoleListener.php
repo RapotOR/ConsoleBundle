@@ -13,7 +13,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * Listener for console
  *
- * @author Cédric Lahouste
+ * @author CÃ©dric Lahouste
  * @author winzou
  *
  * @api
@@ -87,25 +87,27 @@ class Sf2genConsoleListener
         }
     }
 
-    protected function getCommands() {
-
+    protected function getCommands()
+    {
         $commands = $this->getCacheContent();
 
-        if($commands === false) {
-            if(!is_dir( $this->cacheDir ))
-                mkdir( $this->cacheDir, 0777 );
+        if ($commands === false) {
+            if (!is_dir($this->cacheDir)) {
+                mkdir($this->cacheDir, 0777);
+            }
 
             $commands = $this->fetchCommands();
 
-            file_put_contents( $this->cacheDir . $this->cacheFile, json_encode($commands) );
-        }else{
+            file_put_contents($this->cacheDir . $this->cacheFile, json_encode($commands));
+        } else {
             $commands = json_decode($commands);
         }
 
         return $commands;
     }
 
-    protected function fetchCommands() {
+    protected function fetchCommands()
+    {
         $commands = array();
         foreach ($this->kernel->getBundles() as $bundle) {
             $finder = new Finder();
@@ -114,19 +116,22 @@ class Sf2genConsoleListener
             foreach ($finder as $file) {
                 $content = file_get_contents($bundle->getPath() . DIRECTORY_SEPARATOR . $file->getRelativePathName());
                 if (preg_match("/setName\((['\"])([a-z:]*)(['\"])\)/", $content, $matches)) {
-                    if(isset($matches[2])){
+                    if (isset($matches[2])){
                         $commands[] = $matches[2];
                     }
                 }
             }
         }
+
         return $commands;
     }
 
-    protected function getCacheContent() {
-        if(is_file( $this->cacheDir . $this->cacheFile )){
-            return file_get_contents( $this->cacheDir . $this->cacheFile );
+    protected function getCacheContent()
+    {
+        if (is_file($this->cacheDir . $this->cacheFile)){
+            return file_get_contents($this->cacheDir . $this->cacheFile);
         }
+
         return false;
     }
 }
