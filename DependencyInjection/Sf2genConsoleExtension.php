@@ -6,21 +6,15 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Yaml\Parser;
 
 class Sf2genConsoleExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
-        $processor = new Processor();
         $configuration = new Configuration();
 
-        $yaml = new Parser();
-        array_unshift($configs, $yaml->parse(file_get_contents(__DIR__.'/../Resources/config/console.yml')));
-
-        $config = $processor->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration($configuration, $configs);
 
         if ($config['toolbar']) {
             $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
