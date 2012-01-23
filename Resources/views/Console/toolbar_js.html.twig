@@ -1,7 +1,7 @@
 <div id="sf2gencdt" style="display: none"></div>
 <style type="text/css">
     .sf2gencdt-item {width:200px;height:20px;background-color:#fff;color:#000;cursor:pointer;}
-    #sf2gencdt-console pre {margin:0;}
+    #sf2gencdt-console pre {margin:0;background-color:transparent;}
 </style>
 <script type="text/javascript">/*<![CDATA[*/
     var sf2gen = {
@@ -90,7 +90,7 @@
                     this.input.value = this.ac.children[this.selectedCommand].innerHTML;
                     this.selectedCommand = -1;
                     this.ac.innerHTML = '';
-                }else{            
+                }else{
                     this.lastSentence = null; /*Reinitlast*/
                     this.request(this.input.value);
                     this.input.value = '';
@@ -109,7 +109,7 @@
                     return false;
                 }else{
                     this.hideSelect();
-                    this.showHistoryCommands(false);                    
+                    this.showHistoryCommands(false);
                 }
             }else if(keynum == 40){
                 if(this.ac.children.length > 0){
@@ -119,7 +119,7 @@
                     this.moveSelect(this.selectedCommand);
                     return false;
                 }else{
-                    this.showHistoryCommands(true);                
+                    this.showHistoryCommands(true);
                     this.hideSelect();
                 }
             }else{
@@ -135,7 +135,7 @@
             this.selectedHistoryCommand--;
             if(this.selectedHistoryCommand < -1) /* value -1 equal to lastSentence */
                 this.selectedHistoryCommand=this.sendCommands.length-1;
-            
+
             if(this.sendCommands[this.selectedHistoryCommand] !== undefined)
                 this.input.value = this.sendCommands[this.selectedHistoryCommand];
             else
@@ -161,7 +161,7 @@
                 }
             }
         },
-        showSelect: function(keynum){            
+        showSelect: function(keynum){
             value = this.input.value;
             if(value.length>1){
                 this.ac.style.display = 'block';
@@ -196,7 +196,7 @@
         },
         buildSelectItem: function(idx, txt){
             return '<div class="sf2gencdt-item" onmouseover="sf2gen.moveSelect('+idx+');" onclick="sf2gen.chooseItem(this);">'+txt+'</div>';
-        }    
+        }
     };
     sf2gen.init();
 /*]]>*/</script>
