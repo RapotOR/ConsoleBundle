@@ -2,13 +2,13 @@
 
 namespace Sf2gen\Bundle\ConsoleBundle;
 
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Bundle\TwigBundle\TwigEngine;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Listener for console
@@ -108,22 +108,12 @@ class Sf2genConsoleListener
 
     protected function fetchCommands()
     {
-        $commands = array();
+        $application = new Application($this->kernel);
         foreach ($this->kernel->getBundles() as $bundle) {
-            $finder = new Finder();
-            $finder->files()->name('*Command.php')->in($bundle->getPath());
-
-            foreach ($finder as $file) {
-                $content = file_get_contents($bundle->getPath() . DIRECTORY_SEPARATOR . $file->getRelativePathName());
-                if (preg_match("/setName\((['\"])([a-z:]*)(['\"])\)/", $content, $matches)) {
-                    if (isset($matches[2])){
-                        $commands[] = $matches[2];
-                    }
-                }
-            }
+            $bundle->registerCommands($application);
         }
 
-        return $commands;
+        return array_keys($application->all());
     }
 
     protected function getCacheContent()
