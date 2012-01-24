@@ -10,6 +10,7 @@
  */
 
 namespace Sf2gen\Bundle\ConsoleBundle\Formatter;
+
 use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 
 /**
