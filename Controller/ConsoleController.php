@@ -11,7 +11,7 @@ use Symfony\Component\Process\PhpExecutableFinder;
 
 //Uses for script access
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
 //TODO: add the output formatter in the core
@@ -93,10 +93,7 @@ class ConsoleController extends Controller
                 //Try to execute a console within this process
                 //TODO: fix cache:clear issue
                 try {
-                    //Prepare input
-                    $args = preg_split("/ /", trim($sf2Command));
-                    array_unshift($args, "fakecommandline"); //To simulate the console's arguments
-                    $input = new ArgvInput($args);
+                    $input = new StringInput($sf2Command);
 
                     //Prepare output
                     ob_start();
