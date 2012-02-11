@@ -44,7 +44,7 @@ Installation
         public function registerBundles()
         {
             $bundles = array(
-                // all bundles            
+                // all bundles
             );
 
             if (in_array($this->getEnvironment(), array('dev', 'test'))) {
@@ -54,13 +54,13 @@ Installation
 
             return $bundles;
         }
-          
+
   4. Add the following ressource to your routing_dev.yml:
-        
+
         // app/config/routing_dev.yml
         _sf2gencdt:
             resource: "@Sf2genConsoleBundle/Resources/config/routing.yml"
-            prefix:   /_sf2gencdt    
+            prefix:   /_sf2gencdt
 
   5. You have to disable the firewall if you use the `security component`:
 
@@ -79,6 +79,7 @@ Installation
             toolbar: true  # display the toolbar in the current application ; to be disabled to use it in a third application.
             local: true   # add the current application to list of available apps ; if false, the current application is excluded.
             all: false   # will add all apps with a console available without using `apps` in configuration.
+            env: %kernel.environment% #the env used for the kernel setup
             apps: #  use this to have a well defined list.
                 - app
                 - symfony-standard
