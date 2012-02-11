@@ -33,6 +33,7 @@ class Sf2genConsoleExtension extends Extension
             $config['apps'][] = $local;
         }
 
+        $container->setParameter('sf2gen_console.default_env', $config['env']);
         $container->setParameter('sf2gen_console.apps', $config['apps']);
         $container->setParameter('sf2gen_console.new_process', $config['new_process']);
     }

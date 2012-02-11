@@ -100,7 +100,7 @@ class ConsoleController extends Controller
                     $output = new StreamOutput(fopen("php://output", 'w'), StreamOutput::VERBOSITY_NORMAL, true, new OutputFormatterHtml(true));
 
                     //Start a kernel/console and an application
-                    $env = $input->getParameterOption(array('--env', '-e'), 'dev');
+                    $env = $input->getParameterOption(array('--env', '-e'), $this->container->getParameter('sf2gen_console.default_env'));
                     $debug = !$input->hasParameterOption(array('--no-debug', ''));
                     $kernel = new \AppKernel($env, $debug);
 
