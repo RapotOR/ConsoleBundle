@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('toolbar')->defaultTrue()->end()
                 ->booleanNode('all')->defaultFalse()->end()
                 ->booleanNode('local')->defaultTrue()->end()
+                ->scalarNode('env')->defaultValue('%kernel.environment%')->end()
                 ->arrayNode('apps')
                     ->treatFalseLike(array())
                     ->prototype('scalar')
