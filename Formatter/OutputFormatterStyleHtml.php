@@ -85,22 +85,21 @@ class OutputFormatterStyleHtml implements OutputFormatterStyleInterface
      */
     public function setForeground($color = null)
     {
-        $class = get_called_class();
         if (null === $color) {
             $this->foreground = null;
 
             return;
         }
 
-        if (!isset($class::$availableForegroundColors[$color])) {
+        if (!isset(static::$availableForegroundColors[$color])) {
             throw new \InvalidArgumentException(sprintf(
                 'Invalid foreground color specified: "%s". Expected one of (%s)',
                 $color,
-                implode(', ', array_keys($class::$availableForegroundColors))
+                implode(', ', array_keys(static::$availableForegroundColors))
             ));
         }
 
-        $this->foreground = $class::$availableForegroundColors[$color];
+        $this->foreground = static::$availableForegroundColors[$color];
     }
 
     /**
@@ -112,22 +111,21 @@ class OutputFormatterStyleHtml implements OutputFormatterStyleInterface
      */
     public function setBackground($color = null)
     {
-        $class = get_called_class();
         if (null === $color) {
             $this->background = null;
 
             return;
         }
 
-        if (!isset($class::$availableBackgroundColors[$color])) {
+        if (!isset(static::$availableBackgroundColors[$color])) {
             throw new \InvalidArgumentException(sprintf(
                 'Invalid background color specified: "%s". Expected one of (%s)',
                 $color,
-                implode(', ', array_keys($class::$availableBackgroundColors))
+                implode(', ', array_keys(static::$availableBackgroundColors))
             ));
         }
 
-        $this->background = $class::$availableBackgroundColors[$color];
+        $this->background = static::$availableBackgroundColors[$color];
     }
 
     /**
@@ -139,17 +137,16 @@ class OutputFormatterStyleHtml implements OutputFormatterStyleInterface
      */
     public function setOption($option)
     {
-        $class = get_called_class();
-        if (!isset($class::$availableOptions[$option])) {
+        if (!isset(static::$availableOptions[$option])) {
             throw new \InvalidArgumentException(sprintf(
                 'Invalid option specified: "%s". Expected one of (%s)',
                 $option,
-                implode(', ', array_keys($class::$availableOptions))
+                implode(', ', array_keys(static::$availableOptions))
             ));
         }
 
-        if (false === array_search($class::$availableOptions[$option], $this->options)) {
-            $this->options[] = $class::$availableOptions[$option];
+        if (false === array_search(static::$availableOptions[$option], $this->options)) {
+            $this->options[] = static::$availableOptions[$option];
         }
     }
 
@@ -160,15 +157,15 @@ class OutputFormatterStyleHtml implements OutputFormatterStyleInterface
      */
     public function unsetOption($option)
     {
-        if (!isset($class::$availableOptions[$option])) {
+        if (!isset(static::$availableOptions[$option])) {
             throw new \InvalidArgumentException(sprintf(
                 'Invalid option specified: "%s". Expected one of (%s)',
                 $option,
-                implode(', ', array_keys($class::$availableOptions))
+                implode(', ', array_keys(static::$availableOptions))
             ));
         }
 
-        $pos = array_search($class::$availableOptions[$option], $this->options);
+        $pos = array_search(static::$availableOptions[$option], $this->options);
         if (false !== $pos) {
             unset($this->options[$pos]);
         }

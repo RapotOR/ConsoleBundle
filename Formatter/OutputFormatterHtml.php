@@ -33,15 +33,15 @@ class OutputFormatterHtml extends OutputFormatter
      */
     public function __construct($decorated = null, array $styles = array())
     {
-        $this->setDecorated($decorated);
+        $styles = array_merge(array(
+            'error' => new OutputFormatterStyleHtml('white', 'red'),
+            'info' => new OutputFormatterStyleHtml('green'),
+            'comment' => new OutputFormatterStyleHtml('yellow'),
+            'question' => new OutputFormatterStyleHtml('black', 'cyan'),
+        ), $styles);
 
-        $this->setStyle('error',    new OutputFormatterStyleHtml('white', 'red'));
-        $this->setStyle('info',     new OutputFormatterStyleHtml('green'));
-        $this->setStyle('comment',  new OutputFormatterStyleHtml('yellow'));
-        $this->setStyle('question', new OutputFormatterStyleHtml('black', 'cyan'));
+        parent::__construct($decorated, $styles);
 
-        foreach ($styles as $name => $style) {
-            $this->setStyle($name, $style);
-        }
+        $this->getStyleStack()->setEmptyStyle(new OutputFormatterStyleHtml());
     }
 }
